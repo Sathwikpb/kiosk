@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload — Kiosk</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body style="overflow:auto;">
+  <div id="topbar">
+    <button onclick="window.location='/'">← Back</button>
+    <h1>Upload File</h1>
+  </div>
+  <div style="padding:40px;max-width:500px;margin:0 auto;">
+    <p style="color:#aaa;margin-bottom:20px">Supported: PDF, PPTX, GLB, GLTF, OBJ, STL</p>
+    <input type="file" id="file-input" accept=".pdf,.pptx,.ppt,.glb,.gltf,.obj,.stl"
+      style="display:block;margin-bottom:20px;color:#eee;font-size:1rem;">
+    <button onclick="uploadFile()" style="width:100%;padding:16px;font-size:1.1rem;">Upload</button>
+    <p id="status" style="margin-top:20px;color:#aaa;"></p>
+  </div>
+  <script>
+    async function uploadFile() {
+      const input = document.getElementById('file-input');
+      const status = document.getElementById('status');
+      if (!input.files.length) { status.textContent = 'Pick a file first.'; return; }
+      const formData = new FormData();
+      formData.append('file', input.files[0]);
+      status.textContent = 'Uploading...';
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      status.textContent = data.success ? '✓ Uploaded: ' + data.filename : '✗ Error: ' + data.error;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiosk</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.min.mjs" type="module"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- FILE BROWSER -->
+  <div id="browser">
+    <div id="topbar">
+      <h1>Kiosk</h1>
+      <button id="upload-btn" onclick="window.location='/upload.html'">⬆ Upload</button>
+      <button id="refresh-btn" onclick="loadFiles()">↺ Refresh</button>
+    </div>
+    <div id="file-grid"></div>
+  </div>
+
+  <!-- SLIDE VIEWER -->
+  <div id="slide-viewer" class="hidden">
+    <div id="viewer-topbar">
+      <button onclick="closeViewer()">✕ Close</button>
+      <span id="slide-filename"></span>
+      <span id="slide-page-info"></span>
+    </div>
+    <canvas id="pdf-canvas"></canvas>
+    <div id="slide-controls">
+      <button id="prev-btn" onclick="changePage(-1)">‹</button>
+      <button id="next-btn" onclick="changePage(1)">›</button>
+    </div>
+  </div>
+
+  <!-- 3D VIEWER -->
+  <div id="model-viewer-wrap" class="hidden">
+    <div id="viewer-topbar">
+      <button onclick="closeViewer()">✕ Close</button>
+      <span id="model-filename"></span>
+    </div>
+    <model-viewer id="mv"
+      camera-controls
+      touch-action="pan-y"
+      auto-rotate
+      shadow-intensity="1"
+      style="width:100%;height:calc(100vh - 60px);">
+    </model-viewer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
