@@ -5,17 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kiosk</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <script src="https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.min.mjs" type="module"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <img src="cmti-logo.svg" alt="CMTI Logo" id="splash-logo">
+    <p id="splash-status">Starting up...</p>
+  </div>
+
+  <!-- SLEEP SCREEN -->
+  <div id="sleep" class="hidden">
+    <img src="cmti-logo.svg" alt="CMTI Logo" id="sleep-logo">
+  </div>
+
   <!-- FILE BROWSER -->
-  <div id="browser">
+  <div id="browser" class="hidden">
     <div id="topbar">
-      <h1>Kiosk</h1>
+      <h1>CMTI Kiosk</h1>
       <button id="upload-btn" onclick="window.location='/upload.html'">⬆ Upload</button>
       <button id="refresh-btn" onclick="loadFiles()">↺ Refresh</button>
+      <button id="delete-btn" onclick="toggleSelectMode()">🗑</button>
+      <button id="confirm-delete-btn" class="hidden danger" onclick="confirmDelete()">Delete (<span id="selected-count">0</span>)</button>
+      <button id="cancel-select-btn" class="hidden" onclick="cancelSelectMode()">✕ Cancel</button>
     </div>
     <div id="file-grid"></div>
   </div>

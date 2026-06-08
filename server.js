@@ -70,6 +70,18 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   res.json({ success: true, filename: req.file.filename });
 });
 
+// --- API: delete ---
+app.delete('/api/files/:filename', (req, res) => {
+  const filename = path.basename(req.params.filename);
+  const filePath = path.join(FILES_DIR, filename);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found' });
+  fs.unlink(filePath, (err) => {
+    if (err) return res.status(500).json({ error: 'Delete failed' });
+    res.json({ success: true });
+  });
+});
+
+
 // --- Start ---
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Kiosk backend running on http://0.0.0.0:${PORT}`);

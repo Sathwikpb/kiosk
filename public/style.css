@@ -95,3 +95,45 @@ button:active { background: #444; }
 #slide-page-info { margin-left: auto; font-size: 0.9rem; color: #aaa; }
 
 .hidden { display: none !important; }
+
+/* --- SELECT MODE --- */
+.file-card .select-indicator {
+  display: none;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #00aaff;
+  color: #fff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 0.8rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-card { position: relative; }
+
+.file-card.selectable {
+  border-color: #444;
+  opacity: 0.85;
+}
+
+.file-card.selectable:active,
+.file-card.selected {
+  border-color: #00aaff;
+  background: #1a2a3a;
+  opacity: 1;
+}
+
+.file-card.selected .select-indicator {
+  display: flex;
+}
+
+button.danger {
+  background: #5a1a1a;
+  border-color: #aa3333;
+  color: #ffaaaa;
+}
+
+button.danger:active { background: #7a2a2a; }

@@ -1,6 +1,75 @@
+// --- State ---
 let pdfDoc = null;
 let currentPage = 1;
+const INACTIVITY_MS = 3 * 60 * 1000;
+let sleepTimer = null;
+let isSleeping = false;
+let selectMode = false;
+let selectedFiles = new Set();
 
+// --- Splash ---
+async function waitForBackend() {
+  const status = document.getElementById('splash-status');
+  while (true) {
+    try {
+      const res = await fetch('/api/files');
+      if (res.ok) break;
+    } catch (e) {}
+    status.textContent = 'Connecting to backend...';
+    await new Promise(r => setTimeout(r, 800));
+  }
+  status.textContent = 'Ready';
+  await new Promise(r => setTimeout(r, 600));
+  dismissSplash();
+}
+
+function dismissSplash() {
+  const splash = document.getElementById('splash');
+  splash.classList.add('fade-out');
+  setTimeout(() => {
+    splash.style.display = 'none';
+    document.getElementById('browser').classList.remove('hidden');
+    loadFiles();
+    startInactivityTimer();
+  }, 800);
+}
+
+// --- Inactivity / Sleep ---
+function startInactivityTimer() {
+  clearTimeout(sleepTimer);
+  sleepTimer = setTimeout(goToSleep, INACTIVITY_MS);
+}
+
+function resetInactivityTimer() {
+  if (isSleeping) return;
+  clearTimeout(sleepTimer);
+  sleepTimer = setTimeout(goToSleep, INACTIVITY_MS);
+}
+
+function goToSleep() {
+  isSleeping = true;
+  const sleep = document.getElementById('sleep');
+  sleep.classList.remove('hidden');
+  requestAnimationFrame(() => sleep.classList.add('fade-in'));
+}
+
+function wakeUp() {
+  if (!isSleeping) return;
+  isSleeping = false;
+  const sleep = document.getElementById('sleep');
+  sleep.classList.add('hidden');
+  sleep.classList.remove('fade-in');
+  startInactivityTimer();
+}
+
+['touchstart', 'touchend', 'mousedown', 'mousemove', 'keydown'].forEach(evt => {
+  document.addEventListener(evt, () => {
+    if (isSleeping) wakeUp();
+    else resetInactivityTimer();
+  }, { passive: true });
+});
+
+// --- File Browser ---
 function iconFor(filename) {
   const ext = filename.split('.').pop().toLowerCase();
   if (ext === 'pdf') return '📄';
@@ -18,13 +87,77 @@ async function loadFiles() {
     return;
   }
   grid.innerHTML = files.map(f => `
-    <div class="file-card" onclick="openFile('${f}')">
+    <div class="file-card ${selectedFiles.has(f) ? 'selected' : ''}"
+         id="card-${CSS.escape(f)}"
+         onclick="handleCardClick('${f}')">
       <div class="file-icon">${iconFor(f)}</div>
       <div class="file-name">${f}</div>
+      <div class="select-indicator">✓</div>
     </div>
   `).join('');
 }
 
+function handleCardClick(filename) {
+  if (selectMode) {
+    toggleSelect(filename);
+  } else {
+    openFile(filename);
+  }
+}
+
+// --- Select Mode ---
+function toggleSelectMode() {
+  selectMode = true;
+  selectedFiles.clear();
+  document.getElementById('delete-btn').classList.add('hidden');
+  document.getElementById('confirm-delete-btn').classList.remove('hidden');
+  document.getElementById('cancel-select-btn').classList.remove('hidden');
+  document.getElementById('upload-btn').classList.add('hidden');
+  document.getElementById('refresh-btn').classList.add('hidden');
+  updateSelectedCount();
+  document.querySelectorAll('.file-card').forEach(c => c.classList.add('selectable'));
+}
+
+function cancelSelectMode() {
+  selectMode = false;
+  selectedFiles.clear();
+  document.getElementById('delete-btn').classList.remove('hidden');
+  document.getElementById('confirm-delete-btn').classList.add('hidden');
+  document.getElementById('cancel-select-btn').classList.add('hidden');
+  document.getElementById('upload-btn').classList.remove('hidden');
+  document.getElementById('refresh-btn').classList.remove('hidden');
+  document.querySelectorAll('.file-card').forEach(c => {
+    c.classList.remove('selectable', 'selected');
+  });
+}
+
+function toggleSelect(filename) {
+  if (selectedFiles.has(filename)) {
+    selectedFiles.delete(filename);
+    document.getElementById('card-' + CSS.escape(filename))?.classList.remove('selected');
+  } else {
+    selectedFiles.add(filename);
+    document.getElementById('card-' + CSS.escape(filename))?.classList.add('selected');
+  }
+  updateSelectedCount();
+}
+
+function updateSelectedCount() {
+  document.getElementById('selected-count').textContent = selectedFiles.size;
+}
+
+async function confirmDelete() {
+  if (selectedFiles.size === 0) { cancelSelectMode(); return; }
+  const names = [...selectedFiles].join(', ');
+  if (!confirm(`Delete ${selectedFiles.size} file(s)?\n\n${names}`)) return;
+  for (const filename of selectedFiles) {
+    await fetch('/api/files/' + encodeURIComponent(filename), { method: 'DELETE' });
+  }
+  cancelSelectMode();
+  loadFiles();
+}
+
+// --- Viewers ---
 function openFile(filename) {
   const ext = filename.split('.').pop().toLowerCase();
   if (ext === 'pdf') openPdf(filename);
@@ -74,4 +207,5 @@ function closeViewer() {
   pdfDoc = null;
 }
 
-loadFiles();
+// --- Boot ---
+waitForBackend();
