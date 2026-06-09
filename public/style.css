@@ -119,6 +119,20 @@ button:active { background: #444; }
   opacity: 0.85;
 }
 
+#topbar-logo {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+  flex: 1;
+  mix-blend-mode: screen;
+  cursor: pointer; /* Makes the mouse turn into a hand icon */
+  transition: opacity 0.2s ease;
+}
+
+#topbar-logo:hover {
+  opacity: 0.8; /* Subtle visual feedback when hovered */
+}
+
 .file-card.selectable:active,
 .file-card.selected {
   border-color: #00aaff;
@@ -130,10 +144,334 @@ button:active { background: #444; }
   display: flex;
 }
 
+#splash-title {
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-top: 8px;
+}
+
+#splash-logo {
+  width: 600px;
+  max-width: 80vw;
+  height: auto;
+  object-fit: contain;
+  mix-blend-mode: screen;
+}
+
+/* --- SLEEP SCREEN --- */
+#sleep {
+  position: fixed;
+  inset: 0;
+  background: #000000; /* Pure black for true sleep mode */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999; /* Ensures it covers absolutely everything */
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#sleep.fade-in {
+  opacity: 1;
+}
+
+#sleep-logo {
+  width: 500px;
+  max-width: 75vw;
+  height: auto;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  animation: sleepPulse 4s ease-in-out infinite;
+}
+
+@keyframes sleepPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.02); }
+}
+
+#splash {
+  position: fixed;
+  inset: 0;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  z-index: 100;
+  transition: opacity 0.8s ease;
+}
 button.danger {
   background: #5a1a1a;
   border-color: #aa3333;
   color: #ffaaaa;
+}
+
+/* --- ENHANCED SPLIT HOME SCREEN --- */
+#home {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #0a0e17 0%, #111827 100%);
+  display: flex;
+  flex-direction: column;
+  z-index: 90;
+  padding: 30px 40px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+}
+
+
+
+
+
+/* --- FOOTER (ADDRESS & CONTACT) --- */
+.home-footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 15px;
+  margin-top: auto; /* Pushes the footer to the bottom */
+  font-size: 0.8rem;
+  color: #8da2b5;
+  line-height: 1.5;
+}
+
+.footer-address {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.footer-address strong {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.footer-contact {
+  flex: 1.2;
+  text-align: right;
+}
+
+.footer-contact strong {
+  color: #00aaff;
+  display: block;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.contact-persons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  align-items: center;
+}
+
+.person {
+  text-align: right;
+}
+
+/* Vertical line between the two contacts */
+.contact-persons .divider {
+  height: 35px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.left-logo {
+  filter: invert(1) brightness(100);
+}
+
+
+
+/* Header with Logos */
+.home-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+  margin-bottom: 30px;
+}
+
+.header-logo {
+  height: 60px; /* Adjust size for placeholder logos */
+  width: auto;
+  object-fit: contain;
+  mix-blend-mode: screen;
+}
+
+.header-titles {
+  text-align: center;
+  color: #8da2b5;
+  letter-spacing: 2px;
+}
+
+.gov-text {
+  font-size: 1.2rem;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+/* 2-Column Main Layout */
+.home-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  flex: 1;
+  min-height: 0; /* Ensures inner scrolling works */
+}
+
+/* Left Panel */
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 20px;
+}
+
+#home-title {
+  color: #ffffff;
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  margin-bottom: 15px;
+  /* HUD Text Glow: Layered from tight/bright to wide/soft */
+  text-shadow: 
+    0 0 10px rgba(0, 170, 255, 0.6),
+    0 0 20px rgba(0, 170, 255, 0.3),
+    0 0 40px rgba(0, 170, 255, 0.1);
+}
+
+#home-subtitle {
+  color: #00aaff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+.home-description {
+  color: #a0aec0;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+#present-btn {
+  background: linear-gradient(90deg, #0055aa, #0077ff);
+  color: #fff;
+  border: 1px solid rgba(0, 170, 255, 0.4);
+  padding: 18px 40px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(0, 85, 170, 0.4);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  align-self: flex-start;
+  margin-top: 20px;
+  /* Adds the breathing animation */
+  animation: buttonPulse 3s infinite alternate;
+}
+
+#present-btn:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 0 10px rgba(0, 85, 170, 0.6);
+}
+
+/* The Keyframes that make it breathe */
+@keyframes buttonPulse {
+  0% {
+    box-shadow: 0 0 15px rgba(0, 170, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 30px rgba(0, 170, 255, 0.7);
+  }
+}
+
+#present-btn:active {
+  transform: translateY(2px) scale(0.98);
+}
+
+/* Right Panel (Scrollable Details) */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  padding-right: 15px;
+}
+
+/* Custom Scrollbar for Right Panel */
+.right-panel::-webkit-scrollbar {
+  width: 8px;
+}
+.right-panel::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.02);
+  border-radius: 4px;
+}
+.right-panel::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+.info-card {
+  background: rgba(10, 15, 25, 0.6); /* Slightly darker backing to make the glow pop */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 2px solid #00aaff; /* Sharp machined cyan accent line */
+  padding: 25px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  /* HUD Box Glow: Outer depth, outer neon edge, and subtle inner glow */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6), 
+    0 0 15px rgba(0, 170, 255, 0.15), 
+    inset 0 1px 20px rgba(0, 170, 255, 0.05);
+  transition: all 0.3s ease;
+}
+.info-card h3 {
+  color: #00aaff;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(0, 170, 255, 0.3);
+  padding-bottom: 8px;
+}
+
+.info-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-card li {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding-left: 20px;
+  position: relative;
+}
+
+.info-card li::before {
+  content: "•";
+  color: #00aaff;
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 1.2rem;
 }
 
 button.danger:active { background: #7a2a2a; }

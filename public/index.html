@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,28 +8,123 @@
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
 
   <!-- SPLASH SCREEN -->
   <div id="splash">
-    <img src="cmti-logo.svg" alt="CMTI Logo" id="splash-logo">
+    <img src="cmti-logo.png" alt="CMTI Logo" id="splash-logo">
+    <p id="splash-title">Aerospace Laboratory</p>
     <p id="splash-status">Starting up...</p>
+  </div>
+
+  <!-- HOME SCREEN (NEW) -->
+  <div id="home" class="hidden">
+
+    <div class="home-header">
+      <img src="india-logo.svg" alt="India Symbol" class="header-logo left-logo">
+      <div class="header-titles">
+      </div>
+      <img src="cmti-logo.png" alt="CMTI Logo" class="header-logo right-logo">
+    </div>
+
+    <div class="home-content">
+
+      <div class="left-panel">
+        <h1 id="home-title">AEROSPACE<br>LABORATORY</h1>
+        <p id="home-subtitle">A CENTRE OF EXCELLENCE FOR AEROSPACE PRODUCT DEVELOPMENT & QUALIFICATION TESTING</p>
+
+        <p class="home-description">
+          For over 25 years, the laboratory has supported the aerospace and defence sectors through product development,
+          specialized test facility realization, and qualification testing. The laboratory possesses expertise in the
+          development of hydraulic pumps, actuators, valves, filters, and associated LRUs.
+        </p>
+
+        <button id="present-btn" onclick="showBrowser()">▶ EXPLORE PRESENTATION</button>
+      </div>
+
+      <div class="right-panel">
+
+        <div class="info-card">
+          <h3>Key Capabilities</h3>
+          <ul>
+            <li>Indigenous development of aerospace hydraulic systems, components, and Line Replaceable Units (LRUs).</li>
+            <li>Excellence in the design, optimization, and development of hydraulic pumps, actuators, and associated subsystems.</li>
+            <li>Design and realization of special-purpose test rigs and customized qualification test facilities.</li>
+            <li>Qualification and acceptance testing of aerospace and industrial hydraulic components in accordance with national, international, and military standards.</li>
+          </ul>
+        </div>
+        
+        <div class="info-card">
+          <h3>Products Developed & Under Development</h3>
+          <ul>
+            <li><strong>Pumps & Motors:</strong> Design optimization and development of axial piston pumps and hydraulic motors.</li>
+            <li><strong>Actuators:</strong> Design development of linear actuators and geared rotary actuators.</li>
+            <li><strong>Test Facilities:</strong> Design & development of test facilities for qualification testing of aerospace hydraulic components as per military standards.</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h3>Testing Services</h3>
+          <ul>
+            <li><strong>Characterization:</strong> Flow vs pressure drop, crack opening pressure etc at various temperatures.</li>
+            <li><strong>Filter Testing:</strong> Multi-pass and single-pass filter testing, collapse pressure testing, hot flow fatigue testing, cold start testing, pressure cycling, etc.</li>
+            <li><strong>Pressure Tests:</strong> Static pressure testing & dynamic pressure cycling tests (Burst & proof pressure tests, pressure impulse test).</li>
+            <li><strong>Environmental:</strong> Vibration, Shock, acceleration, CATH testing (as per MIL Standards).</li>
+            <li><strong>LRU Qualification:</strong> Endurance testing, pressure impulse testing, high/low-temperature performance testing.</li>
+          </ul>
+        </div>
+
+      </div> </div> <div class="home-footer">
+
+      <div class="footer-address">
+        <strong>Central Manufacturing Technology Institute</strong><br>
+        (An Autonomous R&D institute under Ministry of Heavy Industries and Public Enterprises, Govt. of India)<br>
+        Tumkur Road, Bengaluru-560022, Karnataka, India
+      </div>
+
+      <div class="footer-contact">
+        <strong>For Aerospace business enquiries:</strong>
+        <div class="contact-persons">
+          <div class="person">
+            Shanmugaraj V., Scientist F, Centre-Head<br>
+            ✉ shanmugaraj@cmti.res.in &nbsp; ✆ +91-9449842688
+          </div>
+          <div class="divider"></div>
+          <div class="person">
+            Tom Thampy, Scientist E, Group-Head<br>
+            ✉ tomthampy@cmti.res.in &nbsp; ✆ +91-9844349805
+          </div>
+        </div>
+      </div>
+
+    </div> </div>
+
+
+
+
   </div>
 
   <!-- SLEEP SCREEN -->
   <div id="sleep" class="hidden">
-    <img src="cmti-logo.svg" alt="CMTI Logo" id="sleep-logo">
+    <img src="cmti-logo.png" alt="CMTI Logo" id="sleep-logo">
   </div>
 
   <!-- FILE BROWSER -->
   <div id="browser" class="hidden">
     <div id="topbar">
-      <h1>CMTI Kiosk</h1>
-      <button id="upload-btn" onclick="window.location='/upload.html'">⬆ Upload</button>
-      <button id="refresh-btn" onclick="loadFiles()">↺ Refresh</button>
-      <button id="delete-btn" onclick="toggleSelectMode()">🗑</button>
-      <button id="confirm-delete-btn" class="hidden danger" onclick="confirmDelete()">Delete (<span id="selected-count">0</span>)</button>
-      <button id="cancel-select-btn" class="hidden" onclick="cancelSelectMode()">✕ Cancel</button>
+      <div id="topbar">
+        <img src="cmti-logo.png" alt="CMTI" id="topbar-logo" onclick="goHome()" title="Go to Home Screen">
+        <button id="upload-btn" onclick="window.location='/upload.html'">⬆ Upload</button>
+        <button id="refresh-btn" onclick="loadFiles()">↺ Refresh</button>
+        <button id="delete-btn" onclick="toggleSelectMode()">🗑</button>
+
+        <button id="confirm-delete-btn" class="hidden danger" onclick="confirmDelete()">Delete (<span
+            id="selected-count">0</span>)</button>
+        <button id="cancel-select-btn" class="hidden" onclick="cancelSelectMode()">✕ Cancel</button>
+      </div>
+
     </div>
     <div id="file-grid"></div>
   </div>
@@ -53,15 +149,12 @@
       <button onclick="closeViewer()">✕ Close</button>
       <span id="model-filename"></span>
     </div>
-    <model-viewer id="mv"
-      camera-controls
-      touch-action="pan-y"
-      auto-rotate
-      shadow-intensity="1"
+    <model-viewer id="mv" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="1"
       style="width:100%;height:calc(100vh - 60px);">
     </model-viewer>
   </div>
 
   <script src="app.js"></script>
 </body>
+
 </html>

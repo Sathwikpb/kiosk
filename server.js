@@ -35,6 +35,15 @@ function convertToPdf(filePath) {
   });
 }
 
+// Function triggered when clicking "Present"
+
+
+// Optional: Function to go back to the Home Screen
+function goHome() {
+  document.getElementById('browser').classList.add('hidden');
+  document.getElementById('home').classList.remove('hidden');
+}
+
 // --- File watcher ---
 function watchDir(dir, createIfMissing = true) {
   if (!fs.existsSync(dir)) {

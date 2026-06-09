@@ -1,7 +1,7 @@
 // --- State ---
 let pdfDoc = null;
 let currentPage = 1;
-const INACTIVITY_MS = 3 * 60 * 1000;
+const INACTIVITY_MS = 1*10 * 1000;
 let sleepTimer = null;
 let isSleeping = false;
 let selectMode = false;
@@ -23,13 +23,29 @@ async function waitForBackend() {
   dismissSplash();
 }
 
+
 function dismissSplash() {
   const splash = document.getElementById('splash');
   splash.classList.add('fade-out');
   setTimeout(() => {
     splash.style.display = 'none';
-    document.getElementById('browser').classList.remove('hidden');
-    loadFiles();
+    
+    // CHANGE THIS LINE to show 'home' instead of 'browser'
+    document.getElementById('home').classList.remove('hidden'); 
+    
+    startInactivityTimer();
+  }, 800);
+}
+
+function dismissSplash() {
+  const splash = document.getElementById('splash');
+  splash.classList.add('fade-out');
+  setTimeout(() => {
+    splash.style.display = 'none';
+    
+    
+    document.getElementById('home').classList.remove('hidden'); 
+    
     startInactivityTimer();
   }, 800);
 }
@@ -77,6 +93,27 @@ function iconFor(filename) {
   return '📁';
 }
 
+// --- Home Screen Navigation ---
+// --- Home Screen Navigation ---
+function showBrowser() {
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('browser').classList.remove('hidden');
+  
+  // Load files when "Present" is clicked
+  if (typeof loadFiles === 'function') {
+    loadFiles();
+  }
+}
+
+function goHome() {
+  // Hide the browser and any open viewers
+  document.getElementById('browser').classList.add('hidden');
+  document.getElementById('slide-viewer').classList.add('hidden');
+  document.getElementById('model-viewer-wrap').classList.add('hidden');
+  
+  // Show the Home Screen
+  document.getElementById('home').classList.remove('hidden');
+}
 async function loadFiles() {
   const grid = document.getElementById('file-grid');
   grid.innerHTML = '<p style="color:#666;padding:20px">Loading...</p>';
