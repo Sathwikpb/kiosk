@@ -3,33 +3,358 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload — Kiosk</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body style="overflow:auto;">
-  <div id="topbar">
-    <button onclick="window.location='/'">← Back</button>
-    <h1>Upload File</h1>
-  </div>
-  <div style="padding:40px;max-width:500px;margin:0 auto;">
-    <p style="color:#aaa;margin-bottom:20px">Supported: PDF, PPTX, GLB, GLTF, OBJ, STL</p>
-    <input type="file" id="file-input" accept=".pdf,.pptx,.ppt,.glb,.gltf,.obj,.stl"
-      style="display:block;margin-bottom:20px;color:#eee;font-size:1rem;">
-    <button onclick="uploadFile()" style="width:100%;padding:16px;font-size:1.1rem;">Upload</button>
-    <p id="status" style="margin-top:20px;color:#aaa;"></p>
-  </div>
-  <script>
-    async function uploadFile() {
-      const input = document.getElementById('file-input');
-      const status = document.getElementById('status');
-      if (!input.files.length) { status.textContent = 'Pick a file first.'; return; }
-      const formData = new FormData();
-      formData.append('file', input.files[0]);
-      status.textContent = 'Uploading...';
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      status.textContent = data.success ? '✓ Uploaded: ' + data.filename : '✗ Error: ' + data.error;
+  <title>Upload — CMTI Kiosk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080c14; --bg2: #0d1220; --surface: #141b2d;
+      --border: rgba(0,180,255,0.15); --border2: rgba(255,255,255,0.06);
+      --cyan: #00b4ff; --cyan-dim: rgba(0,180,255,0.3);
+      --white: #f0f4ff; --muted: #6b7a99;
+      --font-hud: 'Rajdhani', sans-serif;
+      --font-body: 'Inter', sans-serif;
     }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 28px;
+      height: 64px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .topbar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+    .back-btn {
+      background: var(--surface);
+      color: var(--cyan);
+      border: 1px solid var(--cyan-dim);
+      padding: 8px 18px;
+      font-family: var(--font-hud);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+      min-height: 38px;
+    }
+    .topbar-title {
+      font-family: var(--font-hud);
+      font-size: 0.85rem;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .page {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .upload-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-left: 2px solid var(--cyan);
+      padding: 40px;
+      width: 100%;
+      max-width: 520px;
+      clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    }
+    .card-label {
+      font-family: var(--font-hud);
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .field { margin-bottom: 22px; }
+    label {
+      display: block;
+      font-family: var(--font-hud);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    input[type="text"], select {
+      width: 100%;
+      background: var(--bg2);
+      color: var(--white);
+      border: 1px solid var(--border2);
+      padding: 12px 16px;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--cyan-dim);
+    }
+    select option { background: var(--bg2); }
+    .file-drop {
+      border: 1px dashed var(--border2);
+      background: var(--bg2);
+      padding: 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .file-drop:hover, .file-drop.drag-over {
+      border-color: var(--cyan-dim);
+      background: rgba(0,180,255,0.04);
+    }
+    .file-drop input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .file-drop-icon { font-size: 2rem; margin-bottom: 8px; }
+    .file-drop-text {
+      font-family: var(--font-hud);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .file-drop-name {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--cyan);
+      font-family: var(--font-hud);
+    }
+    .submit-btn {
+      width: 100%;
+      background: transparent;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      padding: 16px;
+      font-family: var(--font-hud);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+    .submit-btn:hover { background: rgba(0,180,255,0.08); }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    #status {
+      margin-top: 18px;
+      font-family: var(--font-hud);
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      min-height: 24px;
+    }
+    .status-ok  { color: #44ff99; }
+    .status-err { color: #ff4466; }
+    .status-working { color: var(--cyan); animation: blink 1s step-start infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .accepted {
+      font-family: var(--font-hud);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 16px;
+    }
+    .queue-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-hud);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      margin-bottom: 20px;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    }
+    .q-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #00ff9d; flex-shrink: 0;
+    }
+    .q-dot.busy { background: #ffb300; animation: qpulse 0.8s ease infinite; }
+    @keyframes qpulse {
+      0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.4)}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <button class="back-btn" onclick="window.location='/'">← Back</button>
+    <span class="topbar-title">Upload File</span>
+  </div>
+
+  <div class="page">
+    <div class="upload-card">
+      <div class="queue-banner" id="queue-banner">
+        <span class="q-dot" id="q-dot"></span>
+        <span id="q-text">Conversion queue: idle</span>
+      </div>
+      <div class="card-label">Add Presentation or Model</div>
+
+      <div class="field">
+        <label>Presentation Title</label>
+        <input type="text" id="title-input" placeholder="e.g. Hydraulic Pump Testing Overview">
+      </div>
+
+      <div class="field">
+        <label>Category</label>
+        <select id="category-input">
+          <option value="Hydraulics">Hydraulics</option>
+          <option value="Testing">Testing</option>
+          <option value="Design">Design</option>
+          <option value="Structures">Structures</option>
+          <option value="Actuators">Actuators</option>
+          <option value="3D Model">3D Model</option>
+          <option value="Gallery">Gallery</option>
+          <option value="General" selected>General</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>File</label>
+        <div class="file-drop" id="drop-zone">
+          <input type="file" id="file-input"
+            accept=".pdf,.pptx,.ppt,.glb,.gltf,.obj,.stl,.jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,.mov"
+            onchange="onFileSelected(this)">
+          <div class="file-drop-icon">📁</div>
+          <div class="file-drop-text">Tap to select or drag &amp; drop</div>
+          <div class="file-drop-name" id="file-name-display"></div>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="uploadFile()">Upload</button>
+      <div id="status"></div>
+      <div class="accepted">Accepted: PDF · PPTX · PPT · GLB · GLTF · OBJ · STL · JPG · PNG · WEBP · MP4 · WEBM</div>
+    </div>
+  </div>
+
+  <script>
+    function onFileSelected(input) {
+      const name = input.files[0]?.name || '';
+      document.getElementById('file-name-display').textContent = name;
+      // Auto-fill title from filename if empty
+      const titleInput = document.getElementById('title-input');
+      if (!titleInput.value && name) {
+        titleInput.value = name
+          .replace(/\.[^.]+$/, '')
+          .replace(/[-_]/g, ' ')
+          .replace(/\b\w/g, c => c.toUpperCase());
+      }
+      // Auto-set category for 3D files and gallery media
+      const ext = name.split('.').pop().toLowerCase();
+      if (['glb','gltf','obj','stl'].includes(ext)) {
+        document.getElementById('category-input').value = '3D Model';
+      } else if (['jpg','jpeg','png','webp','gif','mp4','webm','mov'].includes(ext)) {
+        document.getElementById('category-input').value = 'Gallery';
+      }
+    }
+
+    async function uploadFile() {
+      const file = document.getElementById('file-input').files[0];
+      const title = document.getElementById('title-input').value.trim();
+      const category = document.getElementById('category-input').value;
+      const status = document.getElementById('status');
+      const btn = document.getElementById('submit-btn');
+
+      if (!file) { setStatus('Select a file first.', 'err'); return; }
+      if (!title) { setStatus('Enter a title.', 'err'); return; }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('title', title);
+      formData.append('category', category);
+
+      btn.disabled = true;
+      setStatus('Uploading...', 'working');
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) {
+          setStatus('✓ Uploaded successfully', 'ok');
+          document.getElementById('title-input').value = '';
+          document.getElementById('file-name-display').textContent = '';
+          document.getElementById('file-input').value = '';
+        } else {
+          setStatus('✗ ' + (data.error || 'Upload failed'), 'err');
+        }
+      } catch (e) {
+        setStatus('✗ Network error', 'err');
+      }
+      btn.disabled = false;
+    }
+
+    function setStatus(msg, type) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = type === 'ok' ? 'status-ok' : type === 'err' ? 'status-err' : 'status-working';
+    }
+
+    // SSE queue status
+    (function() {
+      const dot  = document.getElementById('q-dot');
+      const text = document.getElementById('q-text');
+      try {
+        const es = new EventSource('/api/queue-status');
+        es.onmessage = (e) => {
+          const d = JSON.parse(e.data);
+          if (d.status === 'busy') {
+            dot.className = 'q-dot busy';
+            text.textContent = `Converting… (${d.queue} in queue)`;
+          } else {
+            dot.className = 'q-dot';
+            text.textContent = 'Conversion queue: idle';
+          }
+        };
+      } catch(e) {}
+    })();
+
+    // Drag and drop
+    const drop = document.getElementById('drop-zone');
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag-over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('drag-over'));
+    drop.addEventListener('drop', e => {
+      e.preventDefault();
+      drop.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        document.getElementById('file-input').files = dt.files;
+        onFileSelected(document.getElementById('file-input'));
+      }
+    });
   </script>
 </body>
 </html>

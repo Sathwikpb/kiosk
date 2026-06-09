@@ -1,160 +1,563 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kiosk</title>
+  <title>CMTI Aerospace Laboratory</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
+<div id="toast-container"></div>
 
-  <!-- SPLASH SCREEN -->
-  <div id="splash">
-    <img src="cmti-logo.png" alt="CMTI Logo" id="splash-logo">
-    <p id="splash-title">Aerospace Laboratory</p>
-    <p id="splash-status">Starting up...</p>
+<div id="splash">
+  <div class="splash-radar"></div>
+  <div class="splash-sweep"></div>
+  <div class="splash-cross"></div>
+  <div class="splash-ring"></div>
+  <img src="cmti-logo.png" alt="CMTI" id="splash-logo">
+  <p id="splash-title" class="glitch">Aerospace Laboratory</p>
+  <p id="splash-status">Initialising systems...</p>
+  <div id="splash-progress">
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+    <span class="progress-label" id="progress-label">Booting kernel...</span>
   </div>
+</div>
 
-  <!-- HOME SCREEN (NEW) -->
-  <div id="home" class="hidden">
+<div id="sleep" class="hidden">
+  <div class="sleep-bg"></div>
+  <img src="cmti-logo.png" alt="CMTI" id="sleep-logo">
+  <p id="sleep-label">Touch to wake</p>
+</div>
 
-    <div class="home-header">
-      <img src="india-logo.svg" alt="India Symbol" class="header-logo left-logo">
-      <div class="header-titles">
-      </div>
-      <img src="cmti-logo.png" alt="CMTI Logo" class="header-logo right-logo">
+<div id="home" class="hidden">
+  <canvas id="home-canvas"></canvas>
+
+  <header class="hud-header">
+    <img src="india-logo.svg" alt="Govt of India" class="header-logo left-logo">
+    <div class="header-center">
+      <span class="header-eyebrow">Ministry of Heavy Industries · Govt. of India</span>
+      <span class="header-name">Central Manufacturing Technology Institute</span>
+    </div>
+    <div class="header-clock">
+      <span class="clock-time" id="clock-time">--:--:--</span>
+      <span class="clock-date" id="clock-date">--- -- ----</span>
+    </div>
+    <img src="cmti-logo.png" alt="CMTI" class="header-logo right-logo">
+  </header>
+
+  <div class="home-body">
+    <div class="data-stream left">
+      <span class="stream-col" id="stream-l1"></span>
+      <span class="stream-col" id="stream-l2"></span>
+    </div>
+    <div class="data-stream right">
+      <span class="stream-col" id="stream-r1"></span>
+      <span class="stream-col" id="stream-r2"></span>
     </div>
 
-    <div class="home-content">
-
-      <div class="left-panel">
-        <h1 id="home-title">AEROSPACE<br>LABORATORY</h1>
-        <p id="home-subtitle">A CENTRE OF EXCELLENCE FOR AEROSPACE PRODUCT DEVELOPMENT & QUALIFICATION TESTING</p>
-
-        <p class="home-description">
-          For over 25 years, the laboratory has supported the aerospace and defence sectors through product development,
-          specialized test facility realization, and qualification testing. The laboratory possesses expertise in the
-          development of hydraulic pumps, actuators, valves, filters, and associated LRUs.
-        </p>
-
-        <button id="present-btn" onclick="showBrowser()">▶ EXPLORE PRESENTATION</button>
+    <div class="left-panel">
+      <div class="lab-tag">CENTRE OF EXCELLENCE</div>
+      <h1 class="home-title">AEROSPACE<br><span class="title-accent">LABORATORY</span></h1>
+      <p class="home-sub">Aerospace Product Development &amp; Qualification Testing</p>
+      <p class="home-desc">
+        Over 25 years supporting aerospace and defence through hydraulic systems development,
+        special-purpose test facility realisation, and qualification testing to MIL standards.
+      </p>
+      <div class="home-cta-group">
+        <button class="cta-btn" onclick="showBrowser()">
+          <span class="cta-icon">▶</span>
+          <span>EXPLORE PRESENTATIONS</span>
+        </button>
+        <button class="cta-btn cta-secondary" onclick="showAbout()">
+          <span class="cta-icon">ℹ</span>
+          <span>ABOUT THE LAB</span>
+        </button>
+        <button class="cta-btn cta-secondary" onclick="showEnquiry()">
+          <span class="cta-icon">✉</span>
+          <span>ENQUIRE / FEEDBACK</span>
+        </button>
       </div>
-
-      <div class="right-panel">
-
-        <div class="info-card">
-          <h3>Key Capabilities</h3>
-          <ul>
-            <li>Indigenous development of aerospace hydraulic systems, components, and Line Replaceable Units (LRUs).</li>
-            <li>Excellence in the design, optimization, and development of hydraulic pumps, actuators, and associated subsystems.</li>
-            <li>Design and realization of special-purpose test rigs and customized qualification test facilities.</li>
-            <li>Qualification and acceptance testing of aerospace and industrial hydraulic components in accordance with national, international, and military standards.</li>
-          </ul>
-        </div>
-        
-        <div class="info-card">
-          <h3>Products Developed & Under Development</h3>
-          <ul>
-            <li><strong>Pumps & Motors:</strong> Design optimization and development of axial piston pumps and hydraulic motors.</li>
-            <li><strong>Actuators:</strong> Design development of linear actuators and geared rotary actuators.</li>
-            <li><strong>Test Facilities:</strong> Design & development of test facilities for qualification testing of aerospace hydraulic components as per military standards.</li>
-          </ul>
-        </div>
-
-        <div class="info-card">
-          <h3>Testing Services</h3>
-          <ul>
-            <li><strong>Characterization:</strong> Flow vs pressure drop, crack opening pressure etc at various temperatures.</li>
-            <li><strong>Filter Testing:</strong> Multi-pass and single-pass filter testing, collapse pressure testing, hot flow fatigue testing, cold start testing, pressure cycling, etc.</li>
-            <li><strong>Pressure Tests:</strong> Static pressure testing & dynamic pressure cycling tests (Burst & proof pressure tests, pressure impulse test).</li>
-            <li><strong>Environmental:</strong> Vibration, Shock, acceleration, CATH testing (as per MIL Standards).</li>
-            <li><strong>LRU Qualification:</strong> Endurance testing, pressure impulse testing, high/low-temperature performance testing.</li>
-          </ul>
-        </div>
-
-      </div> </div> <div class="home-footer">
-
-      <div class="footer-address">
-        <strong>Central Manufacturing Technology Institute</strong><br>
-        (An Autonomous R&D institute under Ministry of Heavy Industries and Public Enterprises, Govt. of India)<br>
-        Tumkur Road, Bengaluru-560022, Karnataka, India
-      </div>
-
-      <div class="footer-contact">
-        <strong>For Aerospace business enquiries:</strong>
-        <div class="contact-persons">
-          <div class="person">
-            Shanmugaraj V., Scientist F, Centre-Head<br>
-            ✉ shanmugaraj@cmti.res.in &nbsp; ✆ +91-9449842688
-          </div>
-          <div class="divider"></div>
-          <div class="person">
-            Tom Thampy, Scientist E, Group-Head<br>
-            ✉ tomthampy@cmti.res.in &nbsp; ✆ +91-9844349805
-          </div>
-        </div>
-      </div>
-
-    </div> </div>
-
-
-
-
-  </div>
-
-  <!-- SLEEP SCREEN -->
-  <div id="sleep" class="hidden">
-    <img src="cmti-logo.png" alt="CMTI Logo" id="sleep-logo">
-  </div>
-
-  <!-- FILE BROWSER -->
-  <div id="browser" class="hidden">
-    <div id="topbar">
-      <div id="topbar">
-        <img src="cmti-logo.png" alt="CMTI" id="topbar-logo" onclick="goHome()" title="Go to Home Screen">
-        <button id="upload-btn" onclick="window.location='/upload.html'">⬆ Upload</button>
-        <button id="refresh-btn" onclick="loadFiles()">↺ Refresh</button>
-        <button id="delete-btn" onclick="toggleSelectMode()">🗑</button>
-
-        <button id="confirm-delete-btn" class="hidden danger" onclick="confirmDelete()">Delete (<span
-            id="selected-count">0</span>)</button>
-        <button id="cancel-select-btn" class="hidden" onclick="cancelSelectMode()">✕ Cancel</button>
-      </div>
-
     </div>
-    <div id="file-grid"></div>
+
+    <div class="right-panel">
+      <div class="info-card">
+        <div class="card-label">KEY CAPABILITIES</div>
+        <ul>
+          <li>Indigenous development of aerospace hydraulic systems and LRUs</li>
+          <li>Design &amp; development of axial piston pumps, actuators, and subsystems</li>
+          <li>Special-purpose test rig and qualification facility realisation</li>
+          <li>Qualification &amp; acceptance testing per national, international, and MIL standards</li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <div class="card-label">PRODUCTS</div>
+        <ul>
+          <li><strong>Pumps &amp; Motors</strong> — Axial piston pump design optimisation and development</li>
+          <li><strong>Actuators</strong> — Linear and geared rotary actuator development</li>
+          <li><strong>Test Facilities</strong> — Qualification test rigs per military standards</li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <div class="card-label">TESTING SERVICES</div>
+        <ul>
+          <li>Flow vs pressure drop, crack opening pressure at varying temperatures</li>
+          <li>Multi-pass / single-pass filter testing, cold start, pressure cycling</li>
+          <li>Burst &amp; proof pressure, impulse tests</li>
+          <li>Vibration, shock, acceleration, CATH testing (MIL standards)</li>
+          <li>LRU endurance, high/low temperature performance</li>
+        </ul>
+      </div>
+    </div>
   </div>
 
-  <!-- SLIDE VIEWER -->
-  <div id="slide-viewer" class="hidden">
-    <div id="viewer-topbar">
-      <button onclick="closeViewer()">✕ Close</button>
-      <span id="slide-filename"></span>
-      <span id="slide-page-info"></span>
+  <footer class="hud-footer">
+    <div class="footer-addr">
+      <strong>CMTI</strong><br>
+      Tumkur Road, Bengaluru-560022<br>
+      Karnataka, India
+    </div>
+
+    <div class="footer-cards-wrapper">
+      <div class="contact-id-card" onclick="openContactQR('shanmugaraj')">
+        <img src="photo-shanmugaraj.jpg" alt="Shanmugaraj V." class="id-photo" onerror="this.src='default-avatar.png'">
+        <div class="id-info">
+          <span class="id-role">Centre Head</span>
+          <span class="id-name">Shanmugaraj V. <span class="id-rank">Sci-F</span></span>
+          <span class="id-contact">shanmugaraj@cmti.res.in<br>+91-9449842688</span>
+        </div>
+      </div>
+      <div class="contact-id-card" onclick="openContactQR('tom')">
+        <img src="photo-tom.jpg" alt="Tom Thampy" class="id-photo" onerror="this.src='default-avatar.png'">
+        <div class="id-info">
+          <span class="id-role">Group Head</span>
+          <span class="id-name">Tom Thampy <span class="id-rank">Sci-E</span></span>
+          <span class="id-contact">tomthampy@cmti.res.in<br>+91-9844349805</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<div id="browser" class="hidden">
+  <div class="hud-topbar">
+    <img src="cmti-logo.png" alt="CMTI" id="topbar-logo" onclick="goHome()" title="Home">
+    <div class="topbar-title">PRESENTATIONS &amp; MODELS</div>
+
+    <div class="queue-status" id="queue-status-badge">
+      <span class="status-dot idle" id="status-dot"></span>
+      <span id="status-text">IDLE</span>
+    </div>
+
+    <div class="topbar-stats">
+      <div class="stat-item">
+        <span class="stat-value" id="stat-total">0</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-pdf">0</span>
+        <span class="stat-label">PDFs</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-3d">0</span>
+        <span class="stat-label">3D</span>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="hud-btn" onclick="window.location='/upload.html'">⬆ Upload</button>
+      <button class="hud-btn" onclick="loadFiles()">↺ Refresh</button>
+      <button class="hud-btn" id="delete-btn" onclick="toggleSelectMode()">🗑 Select</button>
+      <button class="hud-btn danger hidden" id="confirm-delete-btn" onclick="confirmDelete()">
+        Delete (<span id="selected-count">0</span>)
+      </button>
+      <button class="hud-btn hidden" id="cancel-select-btn" onclick="cancelSelectMode()">✕ Cancel</button>
+    </div>
+  </div>
+
+  <div id="search-bar-wrap">
+    <div class="search-input-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search-input" placeholder="Search presentations..."
+        oninput="filterFiles()" autocomplete="off" spellcheck="false">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()" style="display:none">✕</button>
+    </div>
+  </div>
+
+  <div id="category-tabs">
+    <button class="cat-tab active" data-cat="All" onclick="setCategory('All',this)">All</button>
+    <button class="cat-tab" data-cat="Hydraulics" onclick="setCategory('Hydraulics',this)">Hydraulics</button>
+    <button class="cat-tab" data-cat="Testing" onclick="setCategory('Testing',this)">Testing</button>
+    <button class="cat-tab" data-cat="Design" onclick="setCategory('Design',this)">Design</button>
+    <button class="cat-tab" data-cat="Structures" onclick="setCategory('Structures',this)">Structures</button>
+    <button class="cat-tab" data-cat="Actuators" onclick="setCategory('Actuators',this)">Actuators</button>
+    <button class="cat-tab" data-cat="3D Model" onclick="setCategory('3D Model',this)">3D Models</button>
+    <button class="cat-tab" data-cat="General" onclick="setCategory('General',this)">General</button>
+    <button class="cat-tab" data-cat="Gallery" onclick="setCategory('Gallery',this)">Gallery</button>
+  </div>
+
+  <div id="file-grid"></div>
+</div>
+
+<div id="slide-viewer" class="hidden">
+  <div class="hud-topbar">
+    <button class="hud-btn back-btn" onclick="closeViewer()">← Back</button>
+    <span id="slide-filename" class="viewer-filename"></span>
+    <span id="slide-page-info" class="page-info"></span>
+  </div>
+
+  <div id="pdf-wrap">
+    <div id="pdf-loader" class="hidden">
+      <div class="spinner"></div>
+      <span>Loading document...</span>
     </div>
     <canvas id="pdf-canvas"></canvas>
-    <div id="slide-controls">
-      <button id="prev-btn" onclick="changePage(-1)">‹</button>
-      <button id="next-btn" onclick="changePage(1)">›</button>
-    </div>
   </div>
 
-  <!-- 3D VIEWER -->
-  <div id="model-viewer-wrap" class="hidden">
-    <div id="viewer-topbar">
-      <button onclick="closeViewer()">✕ Close</button>
-      <span id="model-filename"></span>
+  <div id="thumbnail-strip" class="hidden"></div>
+
+  <div id="slide-controls">
+    <div class="viewer-controls-left">
+      <button class="hud-btn" id="thumbs-btn" onclick="toggleThumbnails()" title="Toggle thumbnails">⊞</button>
+      <button class="hud-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
     </div>
-    <model-viewer id="mv" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="1"
-      style="width:100%;height:calc(100vh - 60px);">
-    </model-viewer>
+
+    <div class="slide-controls-center">
+      <button class="nav-btn" id="prev-btn" onclick="changePage(-1)">&#8249;</button>
+      <button class="nav-btn" id="next-btn" onclick="changePage(1)">&#8250;</button>
+    </div>
+
+    <div class="viewer-controls-right">
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="changeZoom(-0.25)" title="Zoom out">−</button>
+        <span class="zoom-level" id="zoom-level">100%</span>
+        <button class="zoom-btn" onclick="changeZoom(0.25)" title="Zoom in">+</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Fit page">⊡</button>
+      </div>
+      <button class="hud-btn" id="download-btn" onclick="downloadCurrentFile()" title="Download">⬇</button>
+    </div>
+  </div>
+</div>
+
+<div id="model-viewer-wrap" class="hidden">
+  <div class="hud-topbar">
+    <button class="hud-btn back-btn" onclick="closeViewer()">← Back</button>
+    <span id="model-filename" class="viewer-filename"></span>
+    <span class="viewer-hint">Drag to rotate · Pinch to zoom</span>
+    <button class="hud-btn" onclick="downloadCurrentFile()" title="Download">⬇ Download</button>
+  </div>
+  <model-viewer id="mv"
+    camera-controls
+    touch-action="pan-y"
+    auto-rotate
+    shadow-intensity="1"
+    environment-image="neutral"
+    style="width:100%;height:calc(100vh - 84px);background:#0a0e17;">
+  </model-viewer>
+</div>
+
+<div id="qr-modal" class="hidden">
+  <div class="modal-bg" onclick="closeContactQR()"></div>
+  <div class="modal-card">
+    <div class="modal-header">Scan to Save Contact</div>
+    <img id="qr-modal-img" src="" alt="Contact QR Code" class="qr-img">
+    <div class="qr-details">
+      <strong id="qr-modal-name">Name</strong><br>
+      <span id="qr-modal-role" style="color:var(--cyan);font-family:var(--font-hud);letter-spacing:0.1em;text-transform:uppercase;font-size:0.8rem;">Role</span><br>
+      CMTI Aerospace Laboratory
+    </div>
+    <button class="hud-btn" onclick="closeContactQR()">✕ Close</button>
+  </div>
+</div>
+
+<!-- ── IMAGE VIEWER ───────────────────────────────────────── -->
+<div id="image-viewer" class="hidden">
+  <div class="hud-topbar">
+    <button class="hud-btn back-btn" onclick="closeViewer()">← Back</button>
+    <span id="image-viewer-title" class="viewer-filename"></span>
+    <div style="margin-left:auto;display:flex;gap:8px;">
+      <button class="hud-btn" id="img-prev-btn" onclick="galleryNav(-1)">&#8249; Prev</button>
+      <span id="img-counter" class="page-info"></span>
+      <button class="hud-btn" id="img-next-btn" onclick="galleryNav(1)">Next &#8250;</button>
+      <button class="hud-btn" onclick="downloadCurrentFile()">⬇ Download</button>
+    </div>
+  </div>
+  <div class="media-center-wrap">
+    <img id="image-viewer-img" src="" alt="" class="media-fit">
+  </div>
+</div>
+
+<!-- ── VIDEO VIEWER ───────────────────────────────────────── -->
+<div id="video-viewer" class="hidden">
+  <div class="hud-topbar">
+    <button class="hud-btn back-btn" onclick="closeViewer()">← Back</button>
+    <span id="video-viewer-title" class="viewer-filename"></span>
+    <button class="hud-btn" style="margin-left:auto" onclick="downloadCurrentFile()">⬇ Download</button>
+  </div>
+  <div class="media-center-wrap">
+    <video id="video-viewer-el" controls autoplay class="media-fit">
+      Your browser does not support video.
+    </video>
+  </div>
+</div>
+
+<!-- ── GALLERY LIGHTBOX ──────────────────────────────────── -->
+<div id="gallery-lightbox" class="hidden">
+  <div class="lightbox-bg" onclick="closeLightbox()"></div>
+  <div class="lightbox-content">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox-nav left" onclick="lightboxNav(-1)">&#8249;</button>
+    <img id="lightbox-img" src="" alt="" class="lightbox-img" style="display:none">
+    <video id="lightbox-video" controls class="lightbox-img" style="display:none"></video>
+    <button class="lightbox-nav right" onclick="lightboxNav(1)">&#8250;</button>
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+</div>
+
+<!-- ── ABOUT PAGE ─────────────────────────────────────── -->
+<div id="about" class="hidden">
+  <div class="hud-topbar">
+    <button class="hud-btn back-btn" onclick="goHome()">← Home</button>
+    <div class="topbar-title">ABOUT THE LABORATORY</div>
+    <button class="hud-btn" style="margin-left:auto" onclick="showEnquiry()">✉ Enquire</button>
   </div>
 
-  <script src="app.js"></script>
+  <div class="about-body">
+
+    <!-- Stats strip -->
+    <div class="about-stats-strip">
+      <div class="about-stat">
+        <span class="about-stat-val">25<span class="about-stat-unit">+</span></span>
+        <span class="about-stat-lbl">Years of Excellence</span>
+      </div>
+      <div class="about-stat-divider"></div>
+      <div class="about-stat">
+        <span class="about-stat-val">500<span class="about-stat-unit">+</span></span>
+        <span class="about-stat-lbl">Projects Completed</span>
+      </div>
+      <div class="about-stat-divider"></div>
+      <div class="about-stat">
+        <span class="about-stat-val">50<span class="about-stat-unit">+</span></span>
+        <span class="about-stat-lbl">Test Facilities</span>
+      </div>
+      <div class="about-stat-divider"></div>
+      <div class="about-stat">
+        <span class="about-stat-val">MIL<span class="about-stat-unit">-STD</span></span>
+        <span class="about-stat-lbl">Qualified Testing</span>
+      </div>
+    </div>
+
+    <div class="about-columns">
+
+      <!-- Left: photo carousel + description -->
+      <div class="about-left">
+        <div class="about-carousel" id="about-carousel">
+          <div class="carousel-track" id="carousel-track">
+            <!-- Populated from gallery files or placeholder -->
+            <div class="carousel-slide placeholder-slide">
+              <div class="carousel-placeholder">
+                <span>📸</span>
+                <span>Upload photos to Gallery category<br>to show here</span>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-nav left" id="carousel-prev" onclick="carouselNav(-1)">&#8249;</button>
+          <button class="carousel-nav right" id="carousel-next" onclick="carouselNav(1)">&#8250;</button>
+          <div class="carousel-dots" id="carousel-dots"></div>
+        </div>
+
+        <div class="about-desc-block">
+          <div class="about-section-label">About</div>
+          <p class="about-desc-text">
+            The CMTI Aerospace Laboratory, under the Ministry of Heavy Industries, Government of India,
+            has been at the forefront of aerospace manufacturing technology for over 25 years.
+            Located at Tumkur Road, Bengaluru, the lab specialises in the indigenous development
+            of hydraulic systems, LRUs, and qualification test infrastructure for India's defence
+            and space programmes.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: capabilities + certifications -->
+      <div class="about-right">
+
+        <div class="about-section-label">Core Competencies</div>
+        <div class="about-capability-list">
+          <div class="about-cap-item">
+            <span class="about-cap-icon">⬡</span>
+            <div>
+              <div class="about-cap-title">Hydraulic Systems Development</div>
+              <div class="about-cap-sub">Axial piston pumps, actuators, control valves, LRUs</div>
+            </div>
+          </div>
+          <div class="about-cap-item">
+            <span class="about-cap-icon">⬡</span>
+            <div>
+              <div class="about-cap-title">Test Facility Realisation</div>
+              <div class="about-cap-sub">Special-purpose rigs designed, built &amp; commissioned in-house</div>
+            </div>
+          </div>
+          <div class="about-cap-item">
+            <span class="about-cap-icon">⬡</span>
+            <div>
+              <div class="about-cap-title">Qualification &amp; Acceptance Testing</div>
+              <div class="about-cap-sub">Per MIL-H-5440, MIL-H-8825, MIL-STD-704, JSSG-2009 &amp; more</div>
+            </div>
+          </div>
+          <div class="about-cap-item">
+            <span class="about-cap-icon">⬡</span>
+            <div>
+              <div class="about-cap-title">Environmental Testing</div>
+              <div class="about-cap-sub">Vibration, shock, acceleration, CATH, thermal cycling</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-section-label" style="margin-top:24px">Standards &amp; Certifications</div>
+        <div class="about-cert-grid">
+          <div class="about-cert-badge">MIL-H-5440</div>
+          <div class="about-cert-badge">MIL-H-8825</div>
+          <div class="about-cert-badge">MIL-STD-704</div>
+          <div class="about-cert-badge">JSSG-2009</div>
+          <div class="about-cert-badge">DEF STAN</div>
+          <div class="about-cert-badge">IS / ISO</div>
+          <div class="about-cert-badge">DRDO</div>
+          <div class="about-cert-badge">ISRO</div>
+        </div>
+
+        <div class="about-section-label" style="margin-top:24px">Clients &amp; Partners</div>
+        <div class="about-client-list">
+          <span class="about-client-tag">HAL</span>
+          <span class="about-client-tag">DRDO</span>
+          <span class="about-client-tag">ISRO</span>
+          <span class="about-client-tag">BEL</span>
+          <span class="about-client-tag">NAL</span>
+          <span class="about-client-tag">DRDL</span>
+          <span class="about-client-tag">ADA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ENQUIRY / FEEDBACK FORM ────────────────────────── -->
+<!--
+  VIRTUAL KEYBOARD NOTE (Raspberry Pi):
+  Add --enable-virtual-keyboard to Chromium launch flags in kiosk script.
+  Or run once: mkdir -p ~/.config/chromium && echo '{"accessibility":{"virtual_keyboard_enabled":true}}' > ~/.config/chromium/Local\ State
+  All inputs use inputmode attributes to trigger the correct keyboard type.
+-->
+<div id="enquiry" class="hidden">
+  <div class="hud-topbar">
+    <button class="hud-btn back-btn" onclick="goHome()">← Home</button>
+    <div class="topbar-title">ENQUIRY &amp; FEEDBACK</div>
+  </div>
+
+  <div class="enquiry-body">
+    <div class="enquiry-card">
+      <div class="enquiry-card-label">Leave your details and we'll get back to you</div>
+
+      <div class="enq-row">
+        <div class="enq-field">
+          <label class="enq-label">Full Name <span class="enq-req">*</span></label>
+          <input id="enq-name" type="text" inputmode="text" autocomplete="name"
+            class="enq-input" placeholder="Your full name">
+        </div>
+        <div class="enq-field">
+          <label class="enq-label">Organisation <span class="enq-req">*</span></label>
+          <input id="enq-org" type="text" inputmode="text" autocomplete="organization"
+            class="enq-input" placeholder="Company / Institute">
+        </div>
+      </div>
+
+      <div class="enq-row">
+        <div class="enq-field">
+          <label class="enq-label">Email</label>
+          <input id="enq-email" type="email" inputmode="email" autocomplete="email"
+            class="enq-input" placeholder="email@example.com">
+        </div>
+        <div class="enq-field">
+          <label class="enq-label">Area of Interest <span class="enq-req">*</span></label>
+          <div class="enq-interest-grid" id="enq-interest-grid">
+            <button class="interest-btn" data-val="Hydraulic Systems" onclick="selectInterest(this)">Hydraulic Systems</button>
+            <button class="interest-btn" data-val="Actuators" onclick="selectInterest(this)">Actuators</button>
+            <button class="interest-btn" data-val="Test Facilities" onclick="selectInterest(this)">Test Facilities</button>
+            <button class="interest-btn" data-val="Qualification Testing" onclick="selectInterest(this)">Qualification Testing</button>
+            <button class="interest-btn" data-val="Environmental Testing" onclick="selectInterest(this)">Environmental Testing</button>
+            <button class="interest-btn" data-val="Collaboration / MoU" onclick="selectInterest(this)">Collaboration / MoU</button>
+            <button class="interest-btn" data-val="General Enquiry" onclick="selectInterest(this)">General Enquiry</button>
+            <button class="interest-btn" data-val="Other" onclick="selectInterest(this)">Other</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="enq-field enq-field-full">
+        <label class="enq-label">Message / Requirements</label>
+        <textarea id="enq-message" inputmode="text" class="enq-textarea"
+          placeholder="Describe your requirement or feedback..." rows="4"></textarea>
+      </div>
+
+      <div class="enq-actions">
+        <button class="enq-clear-btn" onclick="clearEnquiry()">✕ Clear</button>
+        <button class="enq-submit-btn" id="enq-submit-btn" onclick="submitEnquiry()">
+          <span>SUBMIT ENQUIRY</span>
+        </button>
+      </div>
+      <div id="enq-status" class="enq-status"></div>
+    </div>
+
+    <!-- Recent submissions count (admin info) -->
+    <div class="enq-footer-note" id="enq-footer-note"></div>
+  </div>
+</div>
+
+<!-- ── ENQUIRY SUCCESS ────────────────────────────────── -->
+<div id="enquiry-success" class="hidden">
+  <div class="success-wrap">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Thank You!</div>
+    <div class="success-name" id="success-name"></div>
+    <div class="success-msg">Your enquiry has been recorded.<br>Our team will get back to you shortly.</div>
+    <div class="success-timer">Returning to home in <span id="success-countdown">8</span>s</div>
+    <button class="cta-btn" onclick="goHome()" style="margin-top:16px">
+      <span class="cta-icon">⌂</span><span>Return Home Now</span>
+    </button>
+  </div>
+</div>
+
+<!-- ── ATTRACT LOOP ──────────────────────────────────────── -->
+<div id="attract-loop" class="hidden">
+  <div class="attract-media-wrap">
+    <img id="attract-img" src="" alt="" class="attract-media" style="display:none">
+    <video id="attract-video" muted loop class="attract-media" style="display:none"></video>
+  </div>
+  <div class="attract-overlay">
+    <div class="attract-hud-lines">
+      <div class="attract-corner tl"></div>
+      <div class="attract-corner tr"></div>
+      <div class="attract-corner bl"></div>
+      <div class="attract-corner br"></div>
+    </div>
+    <div class="attract-bottom">
+      <img src="cmti-logo.png" alt="CMTI" class="attract-logo">
+      <div class="attract-text">
+        <div class="attract-label">CMTI AEROSPACE LABORATORY</div>
+        <div id="attract-title" class="attract-title"></div>
+      </div>
+      <div class="attract-dots" id="attract-dots"></div>
+      <div class="attract-cta">Touch anywhere to explore</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="app.js"></script>
 </body>
-
 </html>
